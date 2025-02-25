@@ -171,4 +171,4 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-data/
+data/TMDB_movie_dataset_v11.csv
