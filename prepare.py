@@ -66,34 +66,22 @@ from sklearn.preprocessing import StandardScaler
 
 SC = StandardScaler()
 
-df_norm = SC.fit_transform(df.drop(['title', 'org_title', 'action',
+ignore_cols = ['title', 'org_title', 'action',
        'adventure', 'animation', 'comedy', 'crime', 'documentary', 'drama',
        'family', 'fantasy', 'history', 'horror', 'music', 'mystery', 'romance',
        'sciencefiction', 'thriller', 'tvmovie', 'unknown', 'war', 'western',
        'adult_False', 'original_language_de', 'original_language_else',
        'original_language_en', 'original_language_es', 'original_language_fr',
-       'original_language_ja', 'overview', "keywords"],axis=1))
-df_norm_df = pd.DataFrame(df_norm, columns=[x for x in df.columns if x not in ['title', 'org_title', 'action',
-       'adventure', 'animation', 'comedy', 'crime', 'documentary', 'drama',
-       'family', 'fantasy', 'history', 'horror', 'music', 'mystery', 'romance',
-       'sciencefiction', 'thriller', 'tvmovie', 'unknown', 'war', 'western',
-       'adult_False', 'original_language_de', 'original_language_else',
-       'original_language_en', 'original_language_es', 'original_language_fr',
-       'original_language_ja', 'overview', "keywords"]])
+       'original_language_ja', 'overview', "keywords"]
 
-df = pd.concat([df[['title', 'org_title', 'action',
-       'adventure', 'animation', 'comedy', 'crime', 'documentary', 'drama',
-       'family', 'fantasy', 'history', 'horror', 'music', 'mystery', 'romance',
-       'sciencefiction', 'thriller', 'tvmovie', 'unknown', 'war', 'western',
-       'adult_False', 'original_language_de', 'original_language_else',
-       'original_language_en', 'original_language_es', 'original_language_fr',
-       'original_language_ja', 'overview', "keywords"]],df_norm_df],axis=1)
+df_norm = SC.fit_transform(df.drop(ignore_cols, axis=1))
+df_norm_df = pd.DataFrame(df_norm, columns=[x for x in df.columns if x not in ignore_cols])
+
+df = pd.concat([df[ignore_cols],df_norm_df],axis=1)
 
 df = df.drop_duplicates(subset=['title'])
 
 df=df.set_index(['title'])
 data=df.drop('org_title',axis=1)
-
-print(data.head())
 
 
