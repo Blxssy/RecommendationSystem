@@ -6,3 +6,8 @@ pytz==2025.1
 scikit-learn==1.6.1
 scipy==1.13.1
 six==1.17.0
+aiogram~=3.18.0
+
+googletrans~=4.0.2
+dotenv~=0.9.9
+python-dotenv~=1.0.1

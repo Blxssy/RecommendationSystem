@@ -10,8 +10,8 @@ pd.set_option('display.max_columns', None)
 df = main_df[main_df['vote_average']!=0]
 df.reset_index(inplace=True)
 df = df.drop( ['index','id' , 'vote_count' , 'status' , 'release_date', 'revenue' , 'backdrop_path',
-              'budget','homepage','imdb_id','original_title', 'poster_path',
-              'tagline' , 'production_companies','production_countries' ,'spoken_languages'], axis=1)
+              'budget','homepage','imdb_id','original_title',
+              'tagline' , 'production_companies','production_countries' ,'spoken_languages', 'overview', "keywords", 'poster_path'], axis=1)
 df['org_title']=df['title']
 df['genres'] = df['genres'].fillna('unknown')
 df = df.drop_duplicates()
@@ -21,6 +21,7 @@ dff= df.copy()
 
 # -------------------------------------------------------------------------------------------------------------
 # Encoding
+dff['all_genres'] = df['genres']
 genre_l = dff['genres'].apply(lambda x: x.split(','))
 genre_l = pd.DataFrame(genre_l)
 
@@ -72,7 +73,7 @@ ignore_cols = ['title', 'org_title', 'action',
        'sciencefiction', 'thriller', 'tvmovie', 'unknown', 'war', 'western',
        'adult_False', 'original_language_de', 'original_language_else',
        'original_language_en', 'original_language_es', 'original_language_fr',
-       'original_language_ja', 'overview', "keywords"]
+       'original_language_ja', 'all_genres']
 
 df_norm = SC.fit_transform(df.drop(ignore_cols, axis=1))
 df_norm_df = pd.DataFrame(df_norm, columns=[x for x in df.columns if x not in ignore_cols])
@@ -84,4 +85,4 @@ df = df.drop_duplicates(subset=['title'])
 df=df.set_index(['title'])
 data=df.drop('org_title',axis=1)
 
-
+print(data.head())
