@@ -25,7 +25,7 @@ cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 cosine_sim_df = pd.DataFrame(cosine_sim, index=data.index, columns=data.index)
 #print(cosine_sim_df)
 
-end_time = time.time()  # Засекаем время окончания выполнения
+end_time = time.time()
 elapsed_time = end_time - start_time
 
 print(f"Finish preparing. Execution time: {elapsed_time:.2f} seconds\n")
