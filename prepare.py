@@ -11,7 +11,7 @@ df = main_df[main_df['vote_average']!=0]
 df.reset_index(inplace=True)
 df = df.drop( ['index','id' , 'vote_count' , 'status' , 'release_date', 'revenue' , 'backdrop_path',
               'budget','homepage','imdb_id','original_title',
-              'tagline' , 'production_companies','production_countries' ,'spoken_languages', 'overview', "keywords", 'poster_path'], axis=1)
+              'tagline' , 'production_companies','production_countries' ,'spoken_languages', 'poster_path'], axis=1)
 df['org_title']=df['title']
 df['genres'] = df['genres'].fillna('unknown')
 df = df.drop_duplicates()
@@ -73,7 +73,7 @@ ignore_cols = ['title', 'org_title', 'action',
        'sciencefiction', 'thriller', 'tvmovie', 'unknown', 'war', 'western',
        'adult_False', 'original_language_de', 'original_language_else',
        'original_language_en', 'original_language_es', 'original_language_fr',
-       'original_language_ja', 'all_genres']
+       'original_language_ja', 'all_genres', 'overview', 'keywords']
 
 df_norm = SC.fit_transform(df.drop(ignore_cols, axis=1))
 df_norm_df = pd.DataFrame(df_norm, columns=[x for x in df.columns if x not in ignore_cols])
@@ -83,6 +83,4 @@ df = pd.concat([df[ignore_cols],df_norm_df],axis=1)
 df = df.drop_duplicates(subset=['title'])
 
 df=df.set_index(['title'])
-data=df.drop('org_title',axis=1)
-
-print(data.head())
+data=df
