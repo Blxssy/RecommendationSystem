@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import time
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram import F
@@ -29,39 +30,52 @@ async def start_command(message: Message):
 async def recommend_movies(message: Message):
     movie_title = message.text.strip()
 
+    print(movie_title)
+
     try:
         recommendations = get_movies(movie_title)
         if not recommendations:
             await message.answer("Фильм не найден в базе. Попробуйте другое название.")
             return
 
-        media = []  # Список для фотографий
-
         for movie in recommendations:
-            poster_path = main_df.loc[main_df['title'] == movie, 'poster_path'].values
-            poster_path = poster_path[0] if len(poster_path) > 0 else None
+            # Получаем данные о фильме
+            movie_data = main_df.loc[main_df['title'] == movie]
+
+            if movie_data.empty:
+                continue  # Пропускаем, если данных нет
+
+            # Извлекаем нужные поля
+            poster_path = movie_data['poster_path'].values[0] if 'poster_path' in movie_data else None
+            rating = movie_data['vote_average'].values[0] if 'vote_average' in movie_data else "Нет данных"
+            genres = movie_data['genres'].values[0] if 'genres' in movie_data else "Неизвестно"
+            runtime = movie_data['runtime'].values[0] if 'runtime' in movie_data else "Не указано"
+            overview = movie_data['overview'].values[0] if 'overview' in movie_data else "Описание отсутствует"
 
             # Формируем полный URL постера
             poster_url = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else None
 
+            # Формируем текст сообщения
+            movie_info = (
+                f"🎬 <b>{movie}</b>\n"
+                f"⭐️ Средний рейтинг: {rating}\n"
+                f"🎭 Жанры: {genres}\n"
+                f"⏳ Длительность: {runtime} минут\n\n"
+                f"📖 {overview}"
+            )
 
+            # Отправляем сообщение с фото и информацией о фильме
             if poster_url:
-                media.append(InputMediaPhoto(media=poster_url))
+                await message.answer_photo(poster_url, caption=movie_info, parse_mode="HTML")
+            else:
+                await message.answer(movie_info, parse_mode="HTML")
 
-        if media:
-            await bot.send_media_group(message.chat.id, media)
-        else:
-            await message.answer("Постеры не найдены.")
-
-        response = "Похожие фильмы:\n" + "\n".join(recommendations)
     except KeyError as e:
         logging.error(f"Фильм не найден в базе: {e}")
-        response = "Произошла ошибка. Попробуйте позже."
+        await message.answer("Произошла ошибка. Попробуйте позже.")
     except Exception as e:
         logging.error(f"Произошла ошибка: {e}")
-        response = "Произошла ошибка. Попробуйте позже."
-
-    await message.answer(response)
+        await message.answer("Произошла ошибка. Попробуйте позже.")
 
 
 async def main():
@@ -69,4 +83,5 @@ async def main():
 
 
 if __name__ == "__main__":
+    print("Bot started")
     asyncio.run(main())

@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
+import time
+
 from sklearn.preprocessing import MultiLabelBinarizer, OneHotEncoder
+
+start_time = time.time()
+print("Prepare started")
 
 main_df  = pd.read_csv('./data/TMDB_movie_dataset_v11.csv', sep=',', nrows=10000)
 pd.set_option('display.max_columns', None)
@@ -84,3 +89,8 @@ df = df.drop_duplicates(subset=['title'])
 
 df=df.set_index(['title'])
 data=df
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+print(f"Finish preparing. Execution time: {elapsed_time:.2f} seconds\n")

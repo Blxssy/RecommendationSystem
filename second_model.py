@@ -1,10 +1,15 @@
 import re
+import time
 
 from prepare import data, df
 
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+start_time = time.time()
+print("Second model started")
+
 
 first_column = data.columns[0]
 data = data[[first_column, "overview", "keywords", "all_genres"]].fillna("")
@@ -19,6 +24,11 @@ tfidf_matrix = tfidf_vectorizer.fit_transform(data["combined_features"])
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 cosine_sim_df = pd.DataFrame(cosine_sim, index=data.index, columns=data.index)
 #print(cosine_sim_df)
+
+end_time = time.time()  # Засекаем время окончания выполнения
+elapsed_time = end_time - start_time
+
+print(f"Finish preparing. Execution time: {elapsed_time:.2f} seconds\n")
 
 def normalize_title(movie_title):
     return re.sub(r'\s+', '', movie_title).lower()
@@ -42,7 +52,3 @@ def get_movies(movie_title, cosine_sim=cosine_sim_df, num_recommendations=5):
         if base_name not in movie.lower()
     ]
     return [df.loc[movie, first_column] for movie in filtered_movies[:num_recommendations]]
-
-movie = ('Fight Club')
-recommendations = get_movies(movie)
-print(f"Recommendations for {movie}: {', '.join(recommendations)}")
