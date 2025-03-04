@@ -29,8 +29,9 @@ async def start_command(message: Message):
 @router.message(F.text)
 async def recommend_movies(message: Message):
     movie_title = message.text.strip()
+    start_time = time.time()
 
-    print(movie_title)
+    print(f"Movie title: {movie_title}")
 
     try:
         recommendations = get_movies(movie_title)
@@ -70,6 +71,7 @@ async def recommend_movies(message: Message):
             else:
                 await message.answer(movie_info, parse_mode="HTML")
 
+
     except KeyError as e:
         logging.error(f"Фильм не найден в базе: {e}")
         await message.answer("Произошла ошибка. Попробуйте позже.")
@@ -77,11 +79,15 @@ async def recommend_movies(message: Message):
         logging.error(f"Произошла ошибка: {e}")
         await message.answer("Произошла ошибка. Попробуйте позже.")
 
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Finish recommending. Execution time: {elapsed_time:.2f} seconds\n")
+
 
 async def main():
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
-    print("Bot started")
+    print("Bot started\n")
     asyncio.run(main())
