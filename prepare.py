@@ -7,7 +7,7 @@ from sklearn.preprocessing import MultiLabelBinarizer, OneHotEncoder
 start_time = time.time()
 print("Prepare started")
 
-main_df  = pd.read_csv('./data/TMDB_movie_dataset_v11.csv', sep=',', nrows=10000)
+main_df  = pd.read_csv('./data/TMDB_movie_dataset_v11.csv', sep=',')
 pd.set_option('display.max_columns', None)
 
 # -------------------------------------------------------------------------------------------------------------
