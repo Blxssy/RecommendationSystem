@@ -6,7 +6,11 @@ import requests
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram import F
-from aiogram.types import Message, InputMediaPhoto
+from aiogram.types import Message, InputMediaPhoto, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
+
 from dotenv import load_dotenv
 
 from second_model import get_movies
@@ -33,11 +37,58 @@ def search_trailer(movie_title):
         return f"https://www.youtube.com/watch?v={video_id}"
     return None
 
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
+
+class RecommendationState(StatesGroup):
+    waiting_for_movie_title = State()
+    waiting_for_movie_title_second = State()
+
+def get_main_keyboard():
+    """Создает клавиатуру с выбором модели рекомендаций."""
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Рекомендации (Модель 1)", callback_data="start_recommendation")],
+            [InlineKeyboardButton(text="Рекомендации (Модель 2)", callback_data="start_recommendation_second")]
+        ]
+    )
+
 @router.message(F.text == "/start")
 async def start_command(message: Message):
-    await message.answer("Привет! Отправь мне название фильма, и я найду 5 похожих.")
+    await message.answer("Выберите способ рекомендации:", reply_markup=get_main_keyboard())
 
-@router.message(F.text)
+@router.callback_query(F.data == "start_recommendation")
+async def ask_for_movie(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.answer("Введите название фильма:")
+    await state.set_state(RecommendationState.waiting_for_movie_title)
+    await callback_query.answer()
+
+@router.message(RecommendationState.waiting_for_movie_title)
+async def process_movie_title(message: Message, state: FSMContext):
+    await recommend_movies(message)
+    await state.clear()
+    await message.answer("Хотите попробовать ещё раз?", reply_markup=get_main_keyboard())
+
+@router.callback_query(F.data == "start_recommendation_second")
+async def ask_for_movie_second(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.answer("Введите название фильма (для второй модели):")
+    await state.set_state(RecommendationState.waiting_for_movie_title_second)
+    await callback_query.answer()
+
+@router.message(RecommendationState.waiting_for_movie_title_second)
+async def process_movie_title_second(message: Message, state: FSMContext):
+    await recommend_movies_second_model(message)
+    await state.clear()
+    await message.answer("Хотите попробовать ещё раз?", reply_markup=get_main_keyboard())
+
+async def recommend_movies_second_model(message: Message):
+    """Заглушка для второй модели."""
+    await message.answer("Вторая модель пока не реализована. Скоро будет!")
+
+
+
+# @router.message(F.text)
 async def recommend_movies(message: Message):
     start_time = time.time()
     movie_title = message.text.strip()
