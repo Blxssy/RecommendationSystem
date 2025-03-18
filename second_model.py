@@ -12,8 +12,8 @@ print("Second model started")
 
 
 first_column = data.columns[0]
-data = data[[first_column, "overview", "all_genres"]].fillna("")
-data["combined_features"] = data["overview"] + data["all_genres"]
+data = data[[first_column, "overview", "keywords"]].fillna("")
+data["combined_features"] = data["overview"] + data["keywords"]
 
 # TF-IDF vector
 tfidf_vectorizer = TfidfVectorizer(stop_words="english")
