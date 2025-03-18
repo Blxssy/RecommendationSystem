@@ -13,7 +13,7 @@ from aiogram.fsm.state import StatesGroup, State
 
 from dotenv import load_dotenv
 
-from second_model import get_movies
+from first_model import get_movies
 from prepare import main_df
 
 load_dotenv()
