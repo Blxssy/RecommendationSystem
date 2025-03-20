@@ -8,8 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 start_time = time.time()
-print("Second model started")
-
+print("First model started")
 
 first_column = data.columns[0]
 data = data[[first_column, "overview", "keywords"]].fillna("")
@@ -20,10 +19,10 @@ tfidf_vectorizer = TfidfVectorizer(stop_words="english")
 tfidf_matrix = tfidf_vectorizer.fit_transform(data["combined_features"])
 #print(tfidf_matrix.shape)
 
-end_time = time.time()  # Засекаем время окончания выполнения
+end_time = time.time()
 elapsed_time = end_time - start_time
 
-print(f"Finish preparing. Execution time: {elapsed_time:.2f} seconds\n")
+print(f"Finish preparing first model. Execution time: {elapsed_time:.2f} seconds\n")
 
 def normalize_title(movie_title):
     return re.sub(r'\s+', '', movie_title).lower()
